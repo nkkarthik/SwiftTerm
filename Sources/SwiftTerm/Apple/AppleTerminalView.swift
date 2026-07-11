@@ -254,7 +254,7 @@ extension TerminalView {
     
     func getAttributedValue (_ attribute: Attribute, usingFg: TTColor, andBg: TTColor) -> [NSAttributedString.Key:Any]?
     {
-        guard let terminal else {
+        guard let terminal = terminal else {
             return nil
         }
         let flags = attribute.style

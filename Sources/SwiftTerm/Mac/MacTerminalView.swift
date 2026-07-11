@@ -82,7 +82,11 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     
     var cellDimension: CellDimension!
     var caretView: CaretView!
-    var terminal: Terminal!
+    public var terminal: Terminal!
+
+    public func changeScrollback(_ lines: Int) {
+        terminal.options.scrollback = lines
+    }
 
     var selection: SelectionService!
     private var scroller: NSScroller!
@@ -168,21 +172,21 @@ open class TerminalView: NSView, NSTextInputClient, NSUserInterfaceValidations, 
     var becomeMainObserver, resignMainObserver: NSObjectProtocol?
     
     deinit {
-        if let becomeMainObserver {
+        if let becomeMainObserver = becomeMainObserver {
             NotificationCenter.default.removeObserver (becomeMainObserver)
         }
-        if let resignMainObserver {
+        if let resignMainObserver = resignMainObserver {
             NotificationCenter.default.removeObserver (resignMainObserver)
         }
     }
     
     func setupFocusNotification() {
-        becomeMainObserver = NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { [unowned self] notification in
-            self.caretView.updateCursorStyle()
+        becomeMainObserver = NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { [weak self] _ in
+            self?.caretView.updateCursorStyle()
         }
-        resignMainObserver = NotificationCenter.default.addObserver(forName: .init("NSWindowDidResignMainNotification"), object: nil, queue: nil) { [unowned self] notification in
-            self.caretView.disableAnimations()
-            self.caretView.updateView()
+        resignMainObserver = NotificationCenter.default.addObserver(forName: .init("NSWindowDidResignMainNotification"), object: nil, queue: nil) { [weak self] _ in
+            self?.caretView.disableAnimations()
+            self?.caretView.updateView()
         }
     }
     

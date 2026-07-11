@@ -59,9 +59,9 @@ public protocol LocalProcessTerminalViewDelegate: AnyObject {
  * the internal working of `LocalProcessTerminalView`.   If you must change the `delegate`
  * make sure that you proxy the values in your implementation to the values set after initializing this instance
  */
-public class LocalProcessTerminalView: TerminalView, TerminalViewDelegate, LocalProcessDelegate {
+open class LocalProcessTerminalView: TerminalView, TerminalViewDelegate, LocalProcessDelegate {
     
-    var process: LocalProcess!
+    public var process: LocalProcess!
     
     public override init (frame: CGRect)
     {
@@ -158,15 +158,19 @@ public class LocalProcessTerminalView: TerminalView, TerminalViewDelegate, Local
     /**
      * Implements the LocalProcessDelegate method.
      */
-    public func processTerminated(_ source: LocalProcess, exitCode: Int32?) {
+    open func processTerminated(_ source: LocalProcess, exitCode: Int32?) {
         processDelegate?.processTerminated(source: self, exitCode: exitCode)
     }
     
     /**
      * Implements the LocalProcessDelegate.dataReceived method
      */
-    public func dataReceived(slice: ArraySlice<UInt8>) {
+    open func dataReceived(slice: ArraySlice<UInt8>) {
         feed (byteArray: slice)
+    }
+
+    public func terminate() {
+        process.terminate()
     }
     
     /**

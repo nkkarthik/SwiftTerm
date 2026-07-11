@@ -72,6 +72,8 @@ struct CC {
 /// the escape sequence that should be sent in the default mode, vs the application-cursor mode
 /// (controlled by `Terminal.applicationCursor`
 public struct EscapeSequences {
+    public static let bracketedPasteStart: [UInt8] = [0x1b, 0x5b, 0x32, 0x30, 0x30, 0x7e]
+    public static let bracketedPasteEnd: [UInt8] = [0x1b, 0x5b, 0x32, 0x30, 0x31, 0x7e]
     /// Sent when the user pressed the newline character
     public static let cmdNewLine: [UInt8] = [ 10 ]
     /// Sent when the user pressed the return character

@@ -10,10 +10,10 @@ import CoreText
 
 extension CaretView {
     func drawCursor (in context: CGContext, hasFocus: Bool) {
-        guard let ctline else {
+        guard let ctline = ctline else {
             return
         }
-        guard let terminal else {
+        guard let terminal = terminal else {
             return
         }
         context.setFillColor(TTColor.clear.cgColor)
