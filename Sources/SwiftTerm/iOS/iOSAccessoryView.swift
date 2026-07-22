@@ -29,6 +29,13 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             controlButton?.isSelected = controlModifier
         }
     }
+    var metaButton: UIButton?
+    /// This tracks the one-shot Alt/Meta modifier used by Emacs and shells.
+    public var metaModifier: Bool = false {
+        didSet {
+            metaButton?.isSelected = metaModifier
+        }
+    }
     
     var touchButton: UIButton!
     var keyboardButton: UIButton!
@@ -95,6 +102,13 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     func ctrl (_ sender: UIButton)
     {
         controlModifier.toggle()
+    }
+
+    @objc
+    func meta (_ sender: UIButton)
+    {
+        metaModifier.toggle()
+        terminalView?.metaModifier = metaModifier
     }
 
     // Controls the timer for auto-repeat
@@ -200,12 +214,20 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             let controlButton = makeButton("", #selector(ctrl), icon: "control", isNormal: false)
             leftViews.append(controlButton)
             self.controlButton = controlButton
+            let metaButton = makeButton("alt", #selector(meta), isNormal: false)
+            metaButton.isSelected = metaModifier
+            leftViews.append(metaButton)
+            self.metaButton = metaButton
             leftViews.append(makeButton("", #selector(tab), icon: "arrow.right.to.line.compact"))
         } else {
             leftViews.append(makeButton ("esc", #selector(esc), isNormal: false))
             let controlButton = makeButton ("ctrl", #selector(ctrl), isNormal: false)
             leftViews.append(controlButton)
             self.controlButton = controlButton
+            let metaButton = makeButton("alt", #selector(meta), isNormal: false)
+            metaButton.isSelected = metaModifier
+            leftViews.append(metaButton)
+            self.metaButton = metaButton
             leftViews.append(makeButton("", #selector(tab), icon: "arrow.right.to.line.compact", isNormal: false))
             //leftViews.append(makeButton ("tab", #selector(tab)))
         }
@@ -222,7 +244,7 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         // calculate aditional space we can give to keys we want to be bigger (all top level except function keys)
         let minWidth: CGFloat = useSmall ? 20.0 : (UIDevice.current.userInterfaceIdiom == .phone) ? 22 : 32
         let maxFuncKeyWidth = (minWidth + buttonPad) * 10
-        let importantKeysCount: Double = useSmall ? 11 : 13
+        let importantKeysCount: Double = useSmall ? 12 : 14
         let maxSpaceForImportantKeys = frame.width - maxFuncKeyWidth - buttonPad
         var aditionalSpaceForImportantKeys: CGFloat = 0
         if maxSpaceForImportantKeys > 0 {

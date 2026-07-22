@@ -99,8 +99,10 @@ extension TerminalView {
     {
         resetCaches()
         self.cellDimension = computeFontDimensions ()
-        let newCols = Int(frame.width / cellDimension.width)
-        let newRows = Int(frame.height / cellDimension.height)
+        // Guard: cellDimension can be 0 during animation (font not yet rasterized)
+        // Int(Double.infinity) crashes with "Not enough bits to represent the passed value"
+        let newCols = cellDimension.width > 0 ? Int(frame.width / cellDimension.width) : 80
+        let newRows = cellDimension.height > 0 ? Int(frame.height / cellDimension.height) : 24
         resize(cols: newCols, rows: newRows)
         updateCaretView()
         
@@ -130,8 +132,9 @@ extension TerminalView {
         // Get the ascent + descent + leading from the font, already scaled for the font's size
         self.cellDimension = computeFontDimensions ()
         
-        let terminalOptions = TerminalOptions(cols: Int(width / cellDimension.width),
-                                              rows: Int(height / cellDimension.height))
+        let terminalOptions = TerminalOptions(
+            cols: cellDimension.width > 0 ? Int(width / cellDimension.width) : 80,
+            rows: cellDimension.height > 0 ? Int(height / cellDimension.height) : 24)
         
         if terminal == nil {
             terminal = Terminal(delegate: self, options: terminalOptions)
@@ -172,8 +175,8 @@ extension TerminalView {
     /// Returns true if this changed the number of columns/rows, false otherwise
     @discardableResult
     func processSizeChange (newSize: CGSize) -> Bool {
-        let newRows = Int (newSize.height / cellDimension.height)
-        let newCols = Int (getEffectiveWidth (size: newSize) / cellDimension.width)
+        let newRows = cellDimension.height > 0 ? Int(newSize.height / cellDimension.height) : 24
+        let newCols = cellDimension.width > 0 ? Int(getEffectiveWidth(size: newSize) / cellDimension.width) : 80
         
         if newCols != terminal.cols || newRows != terminal.rows {
             selection.active = false

@@ -619,6 +619,7 @@ open class TerminalView: UIScrollView, UITextInputTraits, UIKeyInput, UIScrollVi
     /// If this variable is set, this simulates the meta key being pressed, sending an esc before the text
     public var metaModifier: Bool = false {
         didSet {
+            terminalAccessory?.metaModifier = metaModifier
             if oldValue && !metaModifier {
                 NotificationCenter.default.post(name: .terminalViewMetaModifierReset, object: self)
             }
